@@ -8,7 +8,7 @@ let g:loaded_easy_replace = 1
 highlight link EasyReplace Search
 
 " Define delay (ms) for automatically clearing match highlight
-let s:clear_delay = 3000
+let s:cleanup_delay = 5000
 
 " Change text under cursor
 function! EasyReplaceNormal()
@@ -38,39 +38,47 @@ function! EasyReplaceVisual()
 endfunction
 
 " Clear match highlight and unlet state variables
-function! s:clear_match_and_state(...)
+function! s:cleanup(...)
   if exists('s:match_id')
     call matchdelete(s:match_id)
     unlet s:match_id
   endif
-  if exists('s:clear_timer')
-    unlet s:clear_timer
+  if exists('s:timer')
+    unlet s:timer
   endif
   if exists('s:replace_text')
     unlet s:replace_text
   endif
 endfunction
 
-" Helper function to renew timer for clearing match highlight
-function! s:renew_timer()
-  if exists('s:clear_timer')
-    call timer_stop(s:clear_timer)
-  endif
-  let s:clear_timer = timer_start(s:clear_delay, function('s:clear_match_and_state'))
+" Helper functions to start and renew timer for the `cleanup` callback
+function! s:start_cleanup_timer()
+  let s:timer = timer_start(s:cleanup_delay, function('s:cleanup'))
 endfunction
 
-" Check if match highlight should be cleared by tracking redo-register contents
+function! s:renew_cleanup_timer()
+  if exists('s:timer')
+    call timer_stop(s:timer)
+    call s:start_cleanup_timer()
+  endif
+endfunction
+
+" Clear match highlight smartly (paired with `InsertLeave` autocmd)
 function! EasyReplaceAutoCheck()
   " Do nothing when there is no match highlight
   if !exists('s:match_id')
     return
-  " Keep match highlight if redo-register contents haven't changed
-  elseif !exists('s:replace_text') || s:replace_text ==# @.
+  " Record redo-register contents and start cleanup timer upon first insertion
+  elseif !exists('s:replace_text')
     let s:replace_text = @.
-    call s:renew_timer()
-  " Otherwise, clear match highlight and reset state variables
-  else
-    call s:clear_match_and_state()
+    call s:start_cleanup_timer()
+  " Renew timer if redo-register contents have not changed
+  elseif s:replace_text ==# @.
+    call s:renew_cleanup_timer()
+  " Clean up earlier if user has moved on to new insertions
+  elseif exists('s:timer')
+    call timer_stop(s:timer)
+    call s:cleanup()
   endif
 endfunction
 
