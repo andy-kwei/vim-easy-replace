@@ -8,12 +8,13 @@ let g:loaded_easy_replace = 1
 highlight link EasyReplace Search
 
 " Define delay (ms) for automatically clearing match highlight
-let s:cleanup_delay = 5000
+let s:cleanup_delay = 3000
 
 " Change text under cursor
 function! EasyReplaceNormal()
-  " We don't have to worry about character escaping as `<cword>` behavior
-  " is fairly limited
+  " Clean up any existing state
+  call s:cleanup()
+  " No need to worry about character escaping as `<cword>` is fairly limited
   let @/ = '\<' . expand('<cword>') . '\>'
   " Highlight all matches
   let s:match_id = matchadd('EasyReplace', @/)
@@ -23,6 +24,8 @@ endfunction
 
 " Change text in visual selection
 function! EasyReplaceVisual()
+  " Clean up any existing state
+  call s:cleanup()
   " Store existing content in unnamed register
   let temp = @"
   " Yank visual selection into unnamed register
@@ -37,21 +40,25 @@ function! EasyReplaceVisual()
   call feedkeys('cgn', 'n')
 endfunction
 
-" Clear match highlight and unlet state variables
+" Clear highlight and unset state variables
 function! s:cleanup(...)
   if exists('s:match_id')
+    " Clear match highlight
     call matchdelete(s:match_id)
     unlet s:match_id
   endif
   if exists('s:timer')
+    " `timer_stop` does nothing if timer id is invalid
+    call timer_stop(s:timer)
     unlet s:timer
   endif
   if exists('s:replace_text')
+    " Reset undo-register history
     unlet s:replace_text
   endif
 endfunction
 
-" Helper functions to start and renew timer for the `cleanup` callback
+" Helper functions to start and renew timer for cleanup
 function! s:start_cleanup_timer()
   let s:timer = timer_start(s:cleanup_delay, function('s:cleanup'))
 endfunction
@@ -77,7 +84,6 @@ function! EasyReplaceAutoCheck()
     call s:renew_cleanup_timer()
   " Clean up earlier if user has moved on to new insertions
   elseif exists('s:timer')
-    call timer_stop(s:timer)
     call s:cleanup()
   endif
 endfunction
