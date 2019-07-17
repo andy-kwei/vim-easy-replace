@@ -1,8 +1,7 @@
-" Exit if vi compatible or plugin already loaded
-if &cp || exists('g:loaded_easy_replace')
-  finish
-endif
-let g:loaded_easy_replace = 1
+" if &cp || (v:version < 700) || exists('g:loaded_easy_replace')
+"   finish
+" endif
+" let g:loaded_easy_replace = 1
 
 " Define custom match highlight group
 highlight link EasyReplace Search
@@ -10,20 +9,24 @@ highlight link EasyReplace Search
 " Define delay (ms) for automatically clearing match highlight
 let s:cleanup_delay = 3000
 
-" Change text under cursor
-function! EasyReplaceNormal()
+" Replace word under cursor in normal mode
+function! EasyReplaceNormal(reverse)
   " Clean up any existing state
   call s:cleanup()
   " No need to worry about character escaping as `<cword>` is fairly limited
   let @/ = '\<' . expand('<cword>') . '\>'
   " Highlight all matches
   let s:match_id = matchadd('EasyReplace', @/)
-  " Exectue cgn
-  call feedkeys('cgn', 'n')
+  " Trigger `cgn` keystrokes
+  if !a:reverse
+    call feedkeys('cgn', 'n')
+  else
+    call feedkeys('cgN', 'n')
+  endif
 endfunction
 
-" Change text in visual selection
-function! EasyReplaceVisual()
+" Replace text in visual selection
+function! EasyReplaceVisual(reverse)
   " Clean up any existing state
   call s:cleanup()
   " Store existing content in unnamed register
@@ -36,8 +39,12 @@ function! EasyReplaceVisual()
   let @/ = '\V\C' . escape(@", '\')
   " Restore content to unnamed register
   let @" = temp
-  " Execute cgn
-  call feedkeys('cgn', 'n')
+  " Trigger `cgn` keystrokes
+  if !a:reverse
+    call feedkeys('cgn', 'n')
+  else
+    call feedkeys('cgN', 'n')
+  endif
 endfunction
 
 " Clear highlight and unset state variables
@@ -58,11 +65,12 @@ function! s:cleanup(...)
   endif
 endfunction
 
-" Helper functions to start and renew timer for cleanup
+" Helper function to start clean up timer
 function! s:start_cleanup_timer()
   let s:timer = timer_start(s:cleanup_delay, function('s:cleanup'))
 endfunction
 
+" Helper function to renew clean up timer
 function! s:renew_cleanup_timer()
   if exists('s:timer')
     call timer_stop(s:timer)
@@ -70,7 +78,7 @@ function! s:renew_cleanup_timer()
   endif
 endfunction
 
-" Clear match highlight smartly (paired with `InsertLeave` autocmd)
+" Clear match highlight smartly (via `InsertLeave` autocmd)
 function! EasyReplaceAutoCheck()
   " Do nothing when there is no match highlight
   if !exists('s:match_id')
@@ -88,18 +96,29 @@ function! EasyReplaceAutoCheck()
   endif
 endfunction
 
-" Note that insertions via `.` command triggers `InsertLeave` event
+" Note that insertions from `.` command still trigger `InsertLeave` events
 autocmd InsertLeave * call EasyReplaceAutoCheck()
 
-" Expose plugin maps as `<Plug>(EasyReplace)`
-nnoremap <Plug>(EasyReplace) :<C-u>call EasyReplaceNormal()<CR>
-xnoremap <Plug>(EasyReplace) :<C-u>call EasyReplaceVisual()<CR>
+" Expose plugin mappings
+nnoremap <Plug>(EasyReplace) :<C-u>call EasyReplaceNormal(0)<CR>
+xnoremap <Plug>(EasyReplace) :<C-u>call EasyReplaceVisual(0)<CR>
 
-" Set default mapping to `<Leader>r` safely
+nnoremap <Plug>(EasyReplaceReverse) :<C-u>call EasyReplaceNormal(1)<CR>
+xnoremap <Plug>(EasyReplaceReverse) :<C-u>call EasyReplaceVisual(1)<CR>
+
+" Set default mappings to `<Leader>r` and `<Leader>R`
 if !hasmapto('<Plug>(EasyReplace)', 'n') || mapcheck('<Leader>r', 'n') == ''
   nmap <Leader>r <Plug>(EasyReplace)
 endif
 
 if !hasmapto('<Plug>(EasyReplace)', 'x') || mapcheck('<Leader>r', 'x') == ''
   xmap <Leader>r <Plug>(EasyReplace)
+endif
+
+if !hasmapto('<Plug>(EasyReplaceReverse)', 'n') || mapcheck('<Leader>R', 'n') == ''
+  nmap <Leader>R <Plug>(EasyReplaceReverse)
+endif
+
+if !hasmapto('<Plug>(EasyReplaceReverse)', 'x') || mapcheck('<Leader>R', 'x') == ''
+  xmap <Leader>R <Plug>(EasyReplaceReverse)
 endif
