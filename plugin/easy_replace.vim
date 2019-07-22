@@ -85,9 +85,11 @@ function! EasyReplaceUpdateState()
   " Do nothing if no pattern is being replaced
   if !exists('s:match_pattern')
     return
-  " Refresh highlight duration if redo-register contents did not change yet
-  elseif !exists('s:redo_text') || s:redo_text ==# @.
+  " Record redo-register contents after first replacement
+  elseif !exists('s:redo_text')
     let s:redo_text = @.
+  " Refresh highlight duration if redo-register contents did not change yet
+  elseif s:redo_text ==# @.
     call s:refresh_highlight(s:match_pattern)
   " Reset match state if the user inserted a new pattern
   else
