@@ -39,8 +39,8 @@ function! EasyReplaceVisual(reverse)
   let temp = @"
   " Yank visual selection into unnamed register
   normal! gvy
-  " Escape backslash and seach with `very nomagic` and `no ignorecase` options
-  let @/ = '\V\C' . escape(@", '\')
+  " Escape slashes and search with `very nomagic` and `no ignorecase` options
+  let @/ = '\V\C' . escape(@", '\/')
   " Highlight all matches
   call s:add_replace_pattern(@/)
   " Restore content to unnamed register
