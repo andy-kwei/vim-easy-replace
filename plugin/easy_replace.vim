@@ -16,7 +16,7 @@ if !exists('g:easy_replace_hl_duration')
 endif
 
 " Replace word under cursor in normal mode
-function! EasyReplaceNormal(reverse)
+function! s:easy_replace_normal(reverse)
   " Reset existing state and matches
   call s:clear_replace_pattern()
   " Get word under cursor
@@ -32,14 +32,14 @@ function! EasyReplaceNormal(reverse)
 endfunction
 
 " Replace text in visual selection
-function! EasyReplaceVisual(reverse)
+function! s:easy_replace_visual(reverse)
   " Reset existing state and matches
   call s:clear_replace_pattern()
   " Store existing content in unnamed register
   let temp = @"
   " Yank visual selection into unnamed register
   normal! gvy
-  " Escape slashes and search with `very nomagic` and `no ignorecase` options
+  " Escape slashes and add `very nomagic` and `no ignorecase` options
   let @/ = '\V\C' . escape(@", '\/')
   " Highlight all matches
   call s:add_replace_pattern(@/)
@@ -71,7 +71,6 @@ function! s:clear_replace_pattern(...)
   endif
   unlet! s:match_id
   unlet! s:timer
-  unlet! s:redo_text
 endfunction
 
 " Refresh callback timer
@@ -81,7 +80,7 @@ function! s:refresh_highlight(pattern)
 endfunction
 
 " Clear match highlighting smartly (via `InsertLeave` autocmd)
-function! EasyReplaceUpdateState()
+function! s:easy_replace_update_state()
   " Do nothing if no pattern is being replaced
   if !exists('s:match_pattern')
     return
@@ -94,15 +93,16 @@ function! EasyReplaceUpdateState()
   " Reset match state if the user inserted a new pattern
   else
     unlet! s:match_pattern
+    unlet! s:redo_text
   endif
 endfunction
 
 " Note that insertions from `.` command still trigger `InsertLeave` events
-autocmd InsertLeave * call EasyReplaceUpdateState()
+autocmd InsertLeave * call <SID>easy_replace_update_state()
 
 " Expose plugin mappings
-nnoremap <Plug>(EasyReplace) :<C-u>call EasyReplaceNormal(0)<CR>
-xnoremap <Plug>(EasyReplace) :<C-u>call EasyReplaceVisual(0)<CR>
+nnoremap <Plug>(EasyReplace) :<C-u>call <SID>easy_replace_normal(0)<CR>
+xnoremap <Plug>(EasyReplace) :<C-u>call <SID>easy_replace_visual(0)<CR>
 
-nnoremap <Plug>(EasyReplaceReverse) :<C-u>call EasyReplaceNormal(1)<CR>
-xnoremap <Plug>(EasyReplaceReverse) :<C-u>call EasyReplaceVisual(1)<CR>
+nnoremap <Plug>(EasyReplaceReverse) :<C-u>call <SID>easy_replace_normal(1)<CR>
+xnoremap <Plug>(EasyReplaceReverse) :<C-u>call <SID>easy_replace_visual(1)<CR>
