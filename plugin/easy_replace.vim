@@ -2,9 +2,9 @@
 " --------------------
 " Lightweight search and replace plugin using built-in `cgn` functionality
 
-" if &cp || (v:version < 700) || exists('g:loaded_easy_replace')
-"   finish
-" endif
+if &cp || (v:version < 700) || exists('g:loaded_easy_replace')
+  finish
+endif
 let g:loaded_easy_replace = 1
 
 " Define custom match highlighting group
