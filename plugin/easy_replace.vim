@@ -58,7 +58,7 @@ function! s:easy_replace_visual(is_reverse)
 endfunction
 
 " Handle visual mode prepends correctly with `vim-repeat`
-" Note that we add the `e` keystroke to exit the current word first. Otherwise,
+" Note that we add the `w` keystroke to exit the current word first. Otherwise,
 " if the original word is a suffix of the replacement, we will be stuck at the
 " same place when we press `.`, e.g. 'apple' -> 'pineapple' -> 'pinepineapple'.
 " This is only an issue in visual mode, since the normal mode mapping puts

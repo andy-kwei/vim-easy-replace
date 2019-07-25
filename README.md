@@ -7,6 +7,10 @@ Using [Vim-Plug](https://github.com/junegunn/vim-plug):
 ```vim
 Plug 'andy-kwei/vim-easy-replace'
 ```
+and install [vim-repeat](https://github.com/tpope/vim-repeat) (recommended):
+```vim
+Plug 'tpope/vim-repeat'
+```
 
 ## Example configuration
 Add the following mappings to your `.vimrc`:
