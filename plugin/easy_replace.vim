@@ -2,9 +2,9 @@
 " --------------------
 " Lightweight search and replace plugin using built-in `cgn` functionality
 
-if &cp || (v:version < 700) || exists('g:loaded_easy_replace')
-  finish
-endif
+" if &cp || (v:version < 700) || exists('g:loaded_easy_replace')
+"   finish
+" endif
 let g:loaded_easy_replace = 1
 
 " Define custom match highlighting group
@@ -65,9 +65,9 @@ endfunction
 " `\<` and `\>` (beginning/end of word) guards around the searched word.
 function! s:set_repeat()
   if s:is_reverse
-    silent! call repeat#set(":normal! ecgN\<C-R>.\<CR>")
+    silent! call repeat#set(":normal! wcgN\<C-R>.\<CR>")
   else
-    silent! call repeat#set(":normal! ecgn\<C-R>.\<CR>")
+    silent! call repeat#set(":normal! wcgn\<C-R>.\<CR>")
   endif
 endfunction
 
