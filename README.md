@@ -1,6 +1,8 @@
 Vim-Easy-Replace
 --------------------
-A lightweight [vim-multiple-cursors](https://github.com/terryma/vim-multiple-cursors) replacement that imrpoves the builtin `cgn` functionality.
+A lightweight [vim-multiple-cursors](
+https://github.com/terryma/vim-multiple-cursors) replacement that improves
+upon the builtin `cgn` functionality.
 
 ## Installation
 Using [Vim-Plug](https://github.com/junegunn/vim-plug):
@@ -12,8 +14,8 @@ and install [vim-repeat](https://github.com/tpope/vim-repeat) (recommended):
 Plug 'tpope/vim-repeat'
 ```
 
-## Example configuration
-Add the following mappings to your `.vimrc`:
+## Mappings
+The plugin comes with the following default mappings:
 ```vim
 " Trigger EasyReplace with word under cursor
 nmap <Leader>r <Plug>(EasyReplace)
@@ -23,4 +25,6 @@ nmap <Leader>R <Plug>(EasyReplaceReverse)
 xmap <Leader>r <Plug>(EasyReplace)
 xmap <Leader>R <Plug>(EasyReplaceReverse)
 ```
-Note that this plugin does not come with any default mappings.
+You can also define your own custom mappings to `<Plug>(EasyReplace)` in
+your `.vimrc` (or `init.vim` for Neovim), which will disable the default
+mappings above.
