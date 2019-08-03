@@ -10,6 +10,7 @@ function! easy_replace#normal_begin(is_reverse)
   " Record state
   let s:match_pattern = @/
   let s:is_reverse = a:is_reverse
+  let s:first_replace = 1
   " Trigger `cgn` keystrokes
   if a:is_reverse
     call feedkeys('cgN', 'n')
@@ -35,6 +36,7 @@ function! easy_replace#visual_begin(is_reverse)
   " Record state
   let s:match_pattern = @/
   let s:is_reverse = a:is_reverse
+  let s:first_replace = 1
   " Trigger `cgn` keystrokes
   if a:is_reverse
     call feedkeys('cgN', 'n')
@@ -66,8 +68,6 @@ function! easy_replace#smart_cgn()
   else
     execute "normal! cgn\<C-r>."
   endif
-  " Update state
-  let s:last_replace_pos = s:get_current_pos()
 endfunction
 
 " Helper function to get line number and offset from end of line
@@ -113,11 +113,12 @@ endfunction
 " --------------- State logic ---------------
 " State updates and checks attached to `InsertLeave` autocmd event
 function! easy_replace#update_state()
-  " Do nothing if no pattern is being replaced
-  if !exists('s:match_pattern')
+  " Do nothing if EasyReplace is not active
+  if !exists('s:match_pattern') || !exists('s:first_replace')
     return
   " Initial replacement
-  elseif !exists('s:replace_text')
+  elseif s:first_replace == 1
+    let s:first_replace = 0
     " Record redo-register contents
     let s:replace_text = @.
     " Record position of last replace action
@@ -128,6 +129,8 @@ function! easy_replace#update_state()
   elseif s:replace_text ==# @.
     " Extend (or restart) match highlight duration
     call s:refresh_highlight(s:match_pattern)
+    " Record position of last replace action
+    let s:last_replace_pos = s:get_current_pos()
     " We need to set repeat again
     call s:set_repeat()
   " Reset state after the user has inserted a new pattern
