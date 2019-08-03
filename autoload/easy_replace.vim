@@ -48,11 +48,7 @@ endfunction
 " When the original word happens to be a suffix of its replacement, using
 "   vanilla `cgn` keystrokes with `.` gets us stuck at the same word, causing
 "   behavior such as 'apple' -> 'pineapple' -> 'pinepineapple'. To remedy this
-"   shortcoming, we define the `smart_cgn` function below.
-
-" Side note: This is only an issue in the visual mode function, since we put
-"   `\<` and `\>` (beginning/end of word) guards around the current pattern in
-"   the normal mode version (similar to the behavior of `*` search).
+"   we define the `smart_cgn` function below.
 
 " Execute `cgn` smartly
 function! easy_replace#smart_cgn()
