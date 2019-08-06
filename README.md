@@ -25,6 +25,6 @@ nmap <Leader>R <Plug>(EasyReplaceReverse)
 xmap <Leader>r <Plug>(EasyReplace)
 xmap <Leader>R <Plug>(EasyReplaceReverse)
 ```
-You can also define your own custom mappings to `<Plug>(EasyReplace)` in
-your `.vimrc` (or `init.vim` for Neovim), which will disable the default
-mappings above.
+You can also define your own custom mappings in your `.vimrc` (or
+`init.vim` for Neovim). The plugin will check for any existing mappings
+to `<Plug>(EasyReplace)` before creating the default maps.

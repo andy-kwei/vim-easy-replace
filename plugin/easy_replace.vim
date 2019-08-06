@@ -7,11 +7,11 @@ if &cp || (v:version < 700) || exists('g:loaded_easy_replace')
 endif
 let g:loaded_easy_replace = 1
 
-" Define custom match highlighting group
+" Define custom match highlight group
 highlight link EasyReplace Search
 
 " Define delay (ms) for automatically clearing match highlighting
-if !exists('g:easy_replace_hl_duration')
+if !exists('g:easy_replace_highlight_duration')
   let g:easy_replace_highlight_duration = 1500
 endif
 
