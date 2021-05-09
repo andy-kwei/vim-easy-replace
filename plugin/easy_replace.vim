@@ -7,17 +7,6 @@ if &cp || (v:version < 700) || exists('g:loaded_easy_replace')
 endif
 let g:loaded_easy_replace = 1
 
-" Define custom match highlight group
-highlight link EasyReplace Search
-
-" Define delay (ms) for automatically clearing match highlighting
-if !exists('g:easy_replace_highlight_duration')
-  let g:easy_replace_highlight_duration = 1500
-endif
-
-" Note that insertions from `.` command still trigger `InsertLeave` events
-autocmd InsertLeave * call easy_replace#update_state()
-
 " Expose plugin maps
 nnoremap <Plug>(EasyReplace) :<C-u>call easy_replace#normal_begin(0)<CR>
 xnoremap <Plug>(EasyReplace) :<C-u>call easy_replace#visual_begin(0)<CR>
