@@ -2,17 +2,8 @@
 " Replace word under cursor (from normal mode)
 function! easy_replace#normal_begin(is_reverse)
   " Set search register to word under cursor
-  let @/ = '\<' . expand('<cword>') . '\>'
-  set hlsearch
-  " Record state
-  let s:match_pattern = @/
-  let s:is_reverse = a:is_reverse
-  " Trigger `cgn` keystrokes
-  if a:is_reverse
-    call feedkeys('cgN', 'n')
-  else
-    call feedkeys('cgn', 'n')
-  endif
+  let a:pattern = '\<' . expand('<cword>') . '\>'
+  call search_and_replace(a:pattern, a:is_reverse)
 endfunction
 
 " Replace visual selection
@@ -22,12 +13,15 @@ function! easy_replace#visual_begin(is_reverse)
   " Yank visual selection into unnamed register
   normal! gvy
   " Escape slashes and add `very nomagic` and `no ignorecase` flags
-  let @/ = '\V\C' . escape(@", '\/')
-  set hlsearch
+  let a:pattern = '\V\C' . escape(@", '\/')
+  call s:search_and_replace(a:pattern, a:is_reverse)
   " Restore content to unnamed register
   let @" = temp
-  " Record state
-  let s:match_pattern = @/
+endfunction
+
+function! s:search_and_replace(pattern, is_reverse)
+  let @/ = a:pattern
+  let s:pattern = a:pattern
   let s:is_reverse = a:is_reverse
   " Trigger `cgn` keystrokes
   if a:is_reverse
@@ -36,7 +30,6 @@ function! easy_replace#visual_begin(is_reverse)
     call feedkeys('cgn', 'n')
   endif
 endfunction
-
 " --------------- Smart cgn ---------------
 " Handling visual mode behavior correctly:
 " When the original word happens to be a suffix of its replacement, using
@@ -47,15 +40,17 @@ endfunction
 
 " Execute `cgn` smartly
 function! easy_replace#smart_cgn()
-  " Exit early if there is no active match or there are no more matches
-  if !exists('s:match_pattern') || search(s:match_pattern, 'nw') == 0
+  " Exit early if there are no matches (so that the cursor doesn't move
+  " forward from the next check)
+  if search(s:pattern, 'nw') == 0
     return
   endif
-  " Move cursor forward if its position hasn't changed since the last replace
+  " Move cursor forward by a word if its position hasn't changed since the
+  " last replace
   if exists('s:last_replace_pos') && s:last_replace_pos == s:get_current_pos()
     normal! w
   endif
-  " Execute next replacement
+  " Execute next replace
   if s:is_reverse
     execute "normal! cgN\<C-r>."
   else
