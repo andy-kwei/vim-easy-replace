@@ -4,7 +4,6 @@ function! easy_replace#normal_begin(is_reverse)
   " Set search register to word under cursor
   let l:pattern = '\<' . expand('<cword>') . '\>'
   call s:search_and_replace(l:pattern, a:is_reverse)
-  set hlsearch
 endfunction
 
 " Replace visual selection
@@ -16,7 +15,6 @@ function! easy_replace#visual_begin(is_reverse)
   " Escape slashes and add `very nomagic` and `no ignorecase` flags
   let l:pattern = '\V\C' . escape(@", '\/')
   call s:search_and_replace(l:pattern, a:is_reverse)
-  set hlsearch
   " Restore content to unnamed register
   let @" = temp
 endfunction

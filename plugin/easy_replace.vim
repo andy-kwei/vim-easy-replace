@@ -8,10 +8,10 @@ endif
 let g:loaded_easy_replace = 1
 
 " Expose plugin maps
-nnoremap <Plug>(EasyReplace) :<C-u>call easy_replace#normal_begin(0)<CR>
-xnoremap <Plug>(EasyReplace) :<C-u>call easy_replace#visual_begin(0)<CR>
-nnoremap <Plug>(EasyReplaceReverse) :<C-u>call easy_replace#normal_begin(1)<CR>
-xnoremap <Plug>(EasyReplaceReverse) :<C-u>call easy_replace#visual_begin(1)<CR>
+nnoremap <Plug>(EasyReplace) :<C-u>call easy_replace#normal_begin(0) | set hlsearch<CR>
+xnoremap <Plug>(EasyReplace) :<C-u>call easy_replace#visual_begin(0) | set hlsearch<CR>
+nnoremap <Plug>(EasyReplaceReverse) :<C-u>call easy_replace#normal_begin(1) | set hlsearch<CR>
+xnoremap <Plug>(EasyReplaceReverse) :<C-u>call easy_replace#visual_begin(1) | set hlsearch<CR>
 
 " Create default mappings
 if !hasmapto('<Plug>(EasyReplace)')
