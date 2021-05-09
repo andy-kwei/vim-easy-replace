@@ -2,8 +2,8 @@
 " Replace word under cursor (from normal mode)
 function! easy_replace#normal_begin(is_reverse)
   " Set search register to word under cursor
-  let a:pattern = '\<' . expand('<cword>') . '\>'
-  call s:search_and_replace(a:pattern, a:is_reverse)
+  let l:pattern = '\<' . expand('<cword>') . '\>'
+  call s:search_and_replace(l:pattern, a:is_reverse)
 endfunction
 
 " Replace visual selection
@@ -13,8 +13,8 @@ function! easy_replace#visual_begin(is_reverse)
   " Yank visual selection into unnamed register
   normal! gvy
   " Escape slashes and add `very nomagic` and `no ignorecase` flags
-  let a:pattern = '\V\C' . escape(@", '\/')
-  call s:search_and_replace(a:pattern, a:is_reverse)
+  let l:pattern = '\V\C' . escape(@", '\/')
+  call s:search_and_replace(l:pattern, a:is_reverse)
   " Restore content to unnamed register
   let @" = temp
 endfunction
